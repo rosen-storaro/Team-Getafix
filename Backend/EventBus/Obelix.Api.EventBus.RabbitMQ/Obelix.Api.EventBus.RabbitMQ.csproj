@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Obelix.Api.EventBus.Abstraction\Obelix.Api.EventBus.Abstraction.csproj" />
+      <ProjectReference Include="..\Obelix.Api.EventBus.Shared\Obelix.Api.EventBus.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Aspire.RabbitMQ.Client" Version="9.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
+      <PackageReference Include="OpenTelemetry.Api" Version="1.9.0" />
+      <PackageReference Include="Polly.Core" Version="8.4.2" />
+      <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Hosting.Abstractions">
+        <HintPath>..\..\..\..\..\..\..\.nuget\packages\microsoft.extensions.hosting.abstractions\9.0.1\lib\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

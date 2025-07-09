@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-Getafix.API.Services.Users.MigrationServices-73d7a069-be8b-4b1b-82fa-266f7cc78d5f</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.3.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Aspire\Getafix.API.Aspire.ServiceDefaults\Getafix.API.Aspire.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\Getafix.API.Services.Users.Data\Getafix.API.Services.Users.Data.csproj" />
+      <ProjectReference Include="..\Getafix.API.Services.Users.Services\Getafix.API.Services.Users.Services.csproj" />
+      <ProjectReference Include="..\Getafix.API.Services.Users.WebHost\Getafix.API.Services.Users.WebHost.csproj" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Aspire.RabbitMQ.Client" Version="9.3.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
+      <PackageReference Include="OpenTelemetry.Api" Version="1.9.0" />
+      <PackageReference Include="Polly.Core" Version="8.6.1" />
+      <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Getafix.API.EventBus.Abstraction\Getafix.API.EventBus.Abstraction.csproj" />
+      <ProjectReference Include="..\Getafix.API.EventBus.Shared\Getafix.API.EventBus.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

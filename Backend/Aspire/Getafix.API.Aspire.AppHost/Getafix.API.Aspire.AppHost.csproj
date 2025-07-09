@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <Sdk Name="Aspire.AppHost.Sdk" Version="9.3.1"/>
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UserSecretsId>f04b67c5-383d-46e1-9a20-2759cea3d59c</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1"/>
+        <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.3.1" />
+        <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.3.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Gateway\Getafix.API.Gateway.WebHost\Getafix.API.Gateway.WebHost.csproj" />
+      <ProjectReference Include="..\..\Services\Getafix.Api.Services.Users\Getafix.API.Services.Users.MigrationServices\Getafix.API.Services.Users.MigrationServices.csproj" />
+      <ProjectReference Include="..\..\Services\Getafix.Api.Services.Users\Getafix.API.Services.Users.WebHost\Getafix.API.Services.Users.WebHost.csproj" />
+    </ItemGroup>
+
+</Project>
