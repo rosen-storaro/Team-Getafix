@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Inventory Management</title>
+    <style>
+        /* General Styling */
+        :root {
+            --primary-color: #005A9C;
+            --secondary-color: #FDB813;
+            --light-gray: #f4f4f4;
+            --medium-gray: #ccc;
+            --dark-gray: #333;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: var(--border-radius);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        #auth-container button {
+            background-color: var(--secondary-color);
+            color: var(--dark-gray);
+            border: none;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        #auth-container button:hover {
+            background-color: #eab308;
+        }
+        
+        #user-info {
+            font-size: 0.9rem;
+        }
+
+        /* Main Content & Views */
+        main {
+            margin-top: 20px;
+        }
+
+        .view {
+            display: none; /* Hidden by default */
+        }
+
+        .view.active {
+            display: block; /* Shown when active */
+        }
+        
+        h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Login & Sign-up Forms */
+        .auth-form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .auth-form-container .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .auth-form-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .auth-form-container input, .modal-content select, .modal-content input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+        }
+
+        .auth-form-container button, .modal-content button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .auth-form-container button:hover, .modal-content button:hover {
+            opacity: 0.9;
+        }
+        
+        .auth-form-container .separator {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--medium-gray);
+        }
+        
+        .google-btn {
+            background-color: #4285F4 !important;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .form-footer a {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Card Layout for Inventory & Stats */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .card p {
+            margin: 4px 0;
+            font-size: 0.95rem;
+            flex-grow: 1;
+        }
+        
+        .card .status {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        
+        .status.available { background-color: #d4edda; color: #155724; }
+        .status.checked-out { background-color: #f8d7da; color: #721c24; }
+        .status.under-repair { background-color: #fff3cd; color: #856404; }
+        
+        .card button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .card .request-btn {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .card .request-btn:disabled {
+            background-color: var(--medium-gray);
+            cursor: not-allowed;
+        }
+        
+        /* Table Layout for Admin Requests & User Management */
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 1rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .actions button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+        
+        .approve-btn { background-color: var(--success-color); color: white; }
+        .reject-btn { background-color: var(--danger-color); color: white; }
+        .return-btn { background-color: var(--warning-color); color: var(--dark-gray); }
+        .promote-btn { background-color: var(--primary-color); color: white; }
+        .demote-btn { background-color: var(--warning-color); color: var(--dark-gray); }
+
+        /* Message Toasts */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+        .toast {
+            background-color: var(--dark-gray);
+            color: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+            transform: translateY(20px);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.success { background-color: var(--success-color); }
+        .toast.error { background-color: var(--danger-color); }
+
+        /* Gemini Chat Support */
+        #chat-fab {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        #chat-modal {
+            display: none;
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
+            width: 90%;
+            max-width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            flex-direction: column;
+        }
+        #chat-modal.active {
+            display: flex;
+        }
+        .chat-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header #close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .chat-body {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        .chat-message.user {
+            background-color: var(--secondary-color);
+            color: var(--dark-gray);
+            align-self: flex-end;
+            margin-left: auto;
+            border-bottom-right-radius: 3px;
+        }
+        .chat-message.gemini {
+            background-color: var(--light-gray);
+            align-self: flex-start;
+            border-bottom-left-radius: 3px;
+        }
+        .chat-footer {
+            padding: 10px;
+            border-top: 1px solid var(--light-gray);
+        }
+        #chat-form {
+            display: flex;
+        }
+        #chat-input {
+            flex-grow: 1;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            padding: 8px;
+        }
+        #chat-form button {
+            margin-left: 10px;
+            padding: 8px 12px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+        
+        /* Modals (Reservation & Add Item) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+        }
+        .modal-content .form-group {
+            margin-bottom: 1rem;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .calendar-header button {
+            background: none;
+            border: 1px solid var(--medium-gray);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+        .calendar-grid div {
+            padding: 10px 5px;
+        }
+        .calendar-day {
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .calendar-day:hover {
+            background-color: var(--light-gray);
+        }
+        .calendar-day.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .calendar-day.disabled {
+            color: var(--medium-gray);
+            cursor: not-allowed;
+        }
+        .time-inputs {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+        }
+        #add-item-btn {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>School Inventory Management</h1>
+        <div id="auth-container">
+            <span id="user-info" style="display: none;"></span>
+            <button id="logout-btn" style="display: none;">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <main id="main-content">
+            <!-- Login View -->
+            <div id="login-view" class="view active">
+                <div class="auth-form-container">
+                    <h2>Login</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" required value="student1">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" required value="studentpass">
+                        </div>
+                        <p><i>Hint: Use admin/adminpass or superadmin/superpass.</i></p>
+                        <button type="submit">Login</button>
+                        <div class="separator">OR</div>
+                        <button type="button" class="google-btn">Sign in with Google</button>
+                    </form>
+                    <div class="form-footer">
+                        Don't have an account? <a id="show-signup">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Signup View -->
+            <div id="signup-view" class="view">
+                 <div class="auth-form-container">
+                    <h2>Create Account</h2>
+                    <form id="signup-form">
+                        <div class="form-group">
+                            <label for="signup-username">Username</label>
+                            <input type="text" id="signup-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" id="signup-password" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="signup-confirm-password">Confirm Password</label>
+                            <input type="password" id="signup-confirm-password" required>
+                        </div>
+                        <button type="submit">Sign Up</button>
+                    </form>
+                    <div class="form-footer">
+                        Already have an account? <a id="show-login">Log In</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User View -->
+            <div id="user-view" class="view">
+                <h2>Available Equipment</h2>
+                <div id="user-equipment-list" class="card-container">
+                    <!-- Equipment cards will be injected here -->
+                </div>
+            </div>
+
+            <!-- Admin View -->
+            <div id="admin-view" class="view">
+                <div id="super-admin-panel" class="admin-section" style="display: none;">
+                    <h2>User Management</h2>
+                    <div id="user-management-list" class="table-container">
+                        <!-- User management table will be injected here -->
+                    </div>
+                </div>
+                <div class="admin-section">
+                    <h2>Dashboard Stats</h2>
+                    <div id="admin-stats-container" class="card-container">
+                        <!-- Stats cards will be injected here -->
+                    </div>
+                </div>
+                <div class="admin-section">
+                    <h2>Manage Requests</h2>
+                    <div id="admin-requests-list" class="table-container">
+                        <!-- Requests table will be injected here -->
+                    </div>
+                </div>
+                <div class="admin-section">
+                    <h2>
+                        All Inventory
+                        <button id="add-item-btn" style="display: none;">+ Add New Item</button>
+                    </h2>
+                    <div id="admin-equipment-list" class="card-container">
+                        <!-- All equipment cards will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div id="add-item-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Add New Inventory Item</h3>
+            <form id="add-item-form">
+                <div class="form-group">
+                    <label for="item-name">Item Name</label>
+                    <input type="text" id="item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-type">Item Type (Subject)</label>
+                    <select id="item-type" required></select>
+                </div>
+                <div class="form-group" id="new-type-group" style="display: none;">
+                    <label for="new-item-type">New Type Name</label>
+                    <input type="text" id="new-item-type">
+                </div>
+                 <div class="form-group">
+                    <label for="item-quantity">Quantity</label>
+                    <input type="number" id="item-quantity" min="1" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-condition">Condition</label>
+                    <select id="item-condition">
+                        <option>New</option>
+                        <option>Good</option>
+                        <option>Fair</option>
+                        <option>Poor</option>
+                    </select>
+                </div>
+                 <div class="form-group">
+                    <label for="item-location">Location</label>
+                    <input type="text" id="item-location" required>
+                </div>
+                <button type="submit" style="margin-top: 1rem;">Add Item(s)</button>
+                <button type="button" id="cancel-add-item-btn" style="background-color: var(--medium-gray); margin-top: 0.5rem;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reservation Modal -->
+    <div id="reservation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Reserve Item</h3>
+            <div class="calendar-header">
+                <button id="prev-month-btn">&lt;</button>
+                <h4 id="month-year-display"></h4>
+                <button id="next-month-btn">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="calendar-days"></div>
+            <form id="reservation-form">
+                <div class="time-inputs">
+                    <div>
+                        <label for="start-time">Start Time</label>
+                        <input type="time" id="start-time" value="09:00" required>
+                    </div>
+                    <div>
+                        <label for="end-time">End Time</label>
+                        <input type="time" id="end-time" value="17:00" required>
+                    </div>
+                </div>
+                <input type="hidden" id="reservation-item-id">
+                <button type="submit" style="margin-top: 1rem;">Confirm Reservation</button>
+                <button type="button" id="cancel-reservation-btn" style="background-color: var(--medium-gray); margin-top: 0.5rem;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Gemini Chat -->
+    <button id="chat-fab">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </button>
+    <div id="chat-modal">
+        <div class="chat-header">
+            <span>Support Chat</span>
+            <button id="close-chat">&times;</button>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="chat-message gemini">Hello! How can I help you today?</div>
+        </div>
+        <div class="chat-footer">
+            <form id="chat-form">
+                <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        // --- eventbus.js ---
+        const eventBus = {
+          events: {},
+          on(eventName, listener) { if (!this.events[eventName]) { this.events[eventName] = []; } this.events[eventName].push(listener); },
+          emit(eventName, data) { if (this.events[eventName]) { this.events[eventName].forEach(listener => listener(data)); } },
+        };
+
+        // --- MOCK service.js ---
+        const apiService = {
+            // In-memory mock database
+            _users: [
+                { userId: 0, username: 'superadmin', password: 'superpass', role: 'Super Admin' },
+                { userId: 1, username: 'admin', password: 'adminpass', role: 'Admin' },
+                { userId: 2, username: 'student1', password: 'studentpass', role: 'User' },
+            ],
+            _equipment: [
+                { id: 1, name: "Laptop A", type: "Laptop", serialNumber: "SN001", condition: "Good", status: "Available", location: "Room 101" },
+                { id: 2, name: "Projector B", type: "Projector", serialNumber: "SN002", condition: "Excellent", status: "Available", location: "Library" },
+                { id: 3, name: "USB Drive 16GB", type: "Storage", serialNumber: "SN003", condition: "Good", status: "Checked Out", location: "N/A" },
+                { id: 4, name: "Whiteboard Markers", type: "Supplies", serialNumber: "SN004", condition: "New", status: "Available", location: "Storage Closet" },
+                { id: 5, name: "HDMI Cable", type: "Cable", serialNumber: "SN005", condition: "Good", status: "Under Repair", location: "IT Office" }
+            ],
+            _requests: [
+                { id: 101, equipmentId: 3, equipmentName: "USB Drive 16GB", userId: 2, userName: "student1", status: "Approved", startDate: "2025-07-22T10:00", endDate: "2025-07-22T12:00" },
+                { id: 102, equipmentId: 5, equipmentName: "HDMI Cable", userId: 2, userName: "student1", status: "Pending", startDate: "2025-07-25T09:00", endDate: "2025-07-28T17:00" }
+            ],
+            _nextUserId: 3,
+            _nextEquipmentId: 6,
+
+            async login(username, password) {
+                const user = this._users.find(u => u.username === username && u.password === password);
+                if (user) {
+                    return Promise.resolve({ ...user, token: `fake-token-for-${user.username}` });
+                }
+                return Promise.reject(new Error('Login failed'));
+            },
+            async register(username, password) {
+                if (this._users.some(u => u.username === username)) {
+                    return Promise.reject(new Error('Username already exists'));
+                }
+                const newUser = { userId: this._nextUserId++, username, password, role: 'User' };
+                this._users.push(newUser);
+                return Promise.resolve({ ...newUser, token: `fake-token-for-${newUser.username}` });
+            },
+            async getAllUsers() {
+                return Promise.resolve(this._users);
+            },
+            async updateUserRole(userId, newRole) {
+                const user = this._users.find(u => u.userId === userId);
+                if (user) {
+                    user.role = newRole;
+                    return Promise.resolve(user);
+                }
+                return Promise.reject(new Error('User not found'));
+            },
+            async getEquipment() { return Promise.resolve(this._equipment); },
+            async getEquipmentTypes() {
+                const types = [...new Set(this._equipment.map(item => item.type))];
+                return Promise.resolve(types);
+            },
+            async addEquipment(itemDetails) {
+                const { name, type, quantity, condition, location } = itemDetails;
+                for (let i = 0; i < quantity; i++) {
+                    const newItem = {
+                        id: this._nextEquipmentId++,
+                        name: `${name} #${i + 1}`,
+                        type: type,
+                        serialNumber: `SN-${type.toUpperCase()}-${Date.now() + i}`,
+                        condition: condition,
+                        status: 'Available',
+                        location: location
+                    };
+                    this._equipment.push(newItem);
+                }
+                return Promise.resolve({ success: true });
+            },
+            async getRequests() { return Promise.resolve(this._requests); },
+            async createRequest(reservationDetails) {
+                console.log('Simulating reservation request:', reservationDetails);
+                this._requests.push({ id: Date.now(), status: 'Pending', ...reservationDetails });
+                return Promise.resolve({ success: true });
+            },
+            async updateRequestStatus(requestId, status) {
+                const request = this._requests.find(r => r.id === requestId);
+                if (request) {
+                    request.status = status;
+                    return Promise.resolve({ success: true });
+                }
+                return Promise.reject(new Error('Request not found'));
+            },
+            async getGeminiResponse(prompt) {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) { throw new Error(`API call failed with status: ${response.status}`); }
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    }
+                    return "Sorry, I couldn't get a response.";
+                } catch (error) {
+                    console.error("Gemini API Error:", error);
+                    return "Sorry, there was an error connecting to the support chat.";
+                }
+            }
+        };
+
+        // --- app.js ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const state = { 
+                currentUser: null, 
+                equipment: [], 
+                requests: [],
+                users: [],
+                equipmentTypes: [],
+                calendar: {
+                    date: new Date(),
+                    selectedStartDate: null,
+                    selectedEndDate: null
+                }
+            };
+
+            // --- Element Selectors ---
+            const views = { login: document.getElementById('login-view'), signup: document.getElementById('signup-view'), user: document.getElementById('user-view'), admin: document.getElementById('admin-view') };
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const logoutBtn = document.getElementById('logout-btn');
+            const userInfoDisplay = document.getElementById('user-info');
+            const equipmentLists = { user: document.getElementById('user-equipment-list'), admin: document.getElementById('admin-equipment-list') };
+            const requestsList = document.getElementById('admin-requests-list');
+            const showSignupBtn = document.getElementById('show-signup');
+            const showLoginBtn = document.getElementById('show-login');
+            
+            // Chat selectors
+            const chatFab = document.getElementById('chat-fab');
+            const chatModal = document.getElementById('chat-modal');
+            const closeChatBtn = document.getElementById('close-chat');
+            const chatForm = document.getElementById('chat-form');
+            const chatInput = document.getElementById('chat-input');
+            const chatBody = document.getElementById('chat-body');
+
+            // Modals & Forms
+            const reservationModal = document.getElementById('reservation-modal');
+            const reservationForm = document.getElementById('reservation-form');
+            const cancelReservationBtn = document.getElementById('cancel-reservation-btn');
+            const addItemModal = document.getElementById('add-item-modal');
+            const addItemForm = document.getElementById('add-item-form');
+            const cancelAddItemBtn = document.getElementById('cancel-add-item-btn');
+            const addItemBtn = document.getElementById('add-item-btn');
+            
+            // Calendar Selectors
+            const monthYearDisplay = document.getElementById('month-year-display');
+            const calendarDaysContainer = document.getElementById('calendar-days');
+            const prevMonthBtn = document.getElementById('prev-month-btn');
+            const nextMonthBtn = document.getElementById('next-month-btn');
+            
+            // Admin Panel Selectors
+            const adminStatsContainer = document.getElementById('admin-stats-container');
+            const superAdminPanel = document.getElementById('super-admin-panel');
+            const userManagementList = document.getElementById('user-management-list');
+
+            // --- View Switching ---
+            const switchView = (viewName) => {
+                Object.values(views).forEach(view => view.classList.remove('active'));
+                if(views[viewName]) { views[viewName].classList.add('active'); }
+            };
+
+            // --- Rendering Functions ---
+            const render = () => {
+                if (state.currentUser) {
+                    userInfoDisplay.textContent = `Welcome, ${state.currentUser.username} (${state.currentUser.role})`;
+                    userInfoDisplay.style.display = 'inline';
+                    logoutBtn.style.display = 'inline';
+                    
+                    if (state.currentUser.role === 'Admin' || state.currentUser.role === 'Super Admin') {
+                        switchView('admin');
+                        renderAdminStats();
+                        renderAdminEquipment();
+                        renderAdminRequests();
+                        if (state.currentUser.role === 'Super Admin') {
+                            superAdminPanel.style.display = 'block';
+                            addItemBtn.style.display = 'inline-block';
+                            renderUserManagement();
+                        } else {
+                            superAdminPanel.style.display = 'none';
+                            addItemBtn.style.display = 'none';
+                        }
+                    } else {
+                        switchView('user');
+                        renderUserEquipment();
+                    }
+                } else {
+                    switchView('login');
+                    userInfoDisplay.style.display = 'none';
+                    logoutBtn.style.display = 'none';
+                }
+            };
+
+            const renderAdminStats = () => {
+                const totalItems = state.equipment.length;
+                const pendingRequests = state.requests.filter(req => req.status === 'Pending').length;
+
+                adminStatsContainer.innerHTML = `
+                    <div class="card"><h3>Item Types</h3><p style="font-size: 2rem; text-align: center;">${state.equipmentTypes.length}</p></div>
+                    <div class="card"><h3>Total Items</h3><p style="font-size: 2rem; text-align: center;">${totalItems}</p></div>
+                    <div class="card"><h3>Pending Requests</h3><p style="font-size: 2rem; text-align: center;">${pendingRequests}</p></div>
+                `;
+            };
+
+            const renderUserManagement = () => {
+                let tableHtml = `<table><thead><tr><th>Username</th><th>Role</th><th>Actions</th></tr></thead><tbody>`;
+                state.users.forEach(user => {
+                    if (user.role === 'Super Admin') return;
+                    tableHtml += `<tr> <td>${user.username}</td> <td>${user.role}</td>
+                        <td class="actions">
+                            ${user.role === 'User' ? `<button class="promote-btn" data-id="${user.userId}">Promote to Admin</button>` : ''}
+                            ${user.role === 'Admin' ? `<button class="demote-btn" data-id="${user.userId}">Demote to User</button>` : ''}
+                        </td> </tr>`;
+                });
+                tableHtml += `</tbody></table>`;
+                userManagementList.innerHTML = tableHtml;
+            };
+
+            const renderUserEquipment = () => {
+                equipmentLists.user.innerHTML = '';
+                state.equipment.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    const isAvailable = item.status === 'Available';
+                    card.innerHTML = `
+                        <h3>${item.name}</h3> <p><strong>Type:</strong> ${item.type}</p> <p><strong>Location:</strong> ${item.location}</p>
+                        <p><strong>Condition:</strong> ${item.condition}</p> <p><strong>Status:</strong> <span class="status ${item.status.toLowerCase().replace(' ', '-')}">${item.status}</span></p>
+                        <button class="request-btn" data-id="${item.id}" ${!isAvailable ? 'disabled' : ''}>${isAvailable ? 'Request Item' : 'Unavailable'}</button>
+                    `;
+                    equipmentLists.user.appendChild(card);
+                });
+            };
+            const renderAdminEquipment = () => {
+                equipmentLists.admin.innerHTML = '';
+                 state.equipment.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>${item.name}</h3> <p><strong>ID:</strong> ${item.id}</p> <p><strong>Serial:</strong> ${item.serialNumber}</p>
+                        <p><strong>Location:</strong> ${item.location}</p> <p><strong>Status:</strong> <span class="status ${item.status.toLowerCase().replace(' ', '-')}">${item.status}</span></p>
+                    `;
+                    equipmentLists.admin.appendChild(card);
+                });
+            };
+            const renderAdminRequests = () => {
+                let tableHtml = `<table><thead><tr><th>Item</th><th>User</th><th>Dates</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+                if (state.requests.length === 0) {
+                    tableHtml += `<tr><td colspan="5" style="text-align:center;">No requests found.</td></tr>`;
+                } else {
+                    state.requests.forEach(req => {
+                        const startDate = new Date(req.startDate).toLocaleString();
+                        const endDate = new Date(req.endDate).toLocaleString();
+                        const isPending = req.status === 'Pending';
+                        const isApproved = req.status === 'Approved';
+                        tableHtml += `<tr> <td>${req.equipmentName}</td> <td>${req.userName}</td> <td>${startDate} to ${endDate}</td> <td>${req.status}</td>
+                            <td class="actions">
+                                ${isPending ? `<button class="approve-btn" data-id="${req.id}">Approve</button>` : ''}
+                                ${isPending ? `<button class="reject-btn" data-id="${req.id}">Reject</button>` : ''}
+                                ${isApproved ? `<button class="return-btn" data-id="${req.id}">Log Return</button>` : ''}
+                            </td> </tr>`;
+                    });
+                }
+                tableHtml += `</tbody></table>`;
+                requestsList.innerHTML = tableHtml;
+            };
+            
+            const renderCalendar = () => {
+                const date = state.calendar.date;
+                const month = date.getMonth();
+                const year = date.getFullYear();
+                
+                monthYearDisplay.textContent = `${date.toLocaleString('default', { month: 'long' })} ${year}`;
+                
+                calendarDaysContainer.innerHTML = '';
+                const firstDayOfMonth = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                dayHeaders.forEach(day => {
+                    const dayHeader = document.createElement('div');
+                    dayHeader.textContent = day;
+                    dayHeader.style.fontWeight = 'bold';
+                    calendarDaysContainer.appendChild(dayHeader);
+                });
+
+                for (let i = 0; i < firstDayOfMonth; i++) {
+                    calendarDaysContainer.appendChild(document.createElement('div'));
+                }
+
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.textContent = i;
+                    dayElement.classList.add('calendar-day');
+                    dayElement.dataset.day = i;
+                    
+                    const today = new Date();
+                    const currentDate = new Date(year, month, i);
+                    if (currentDate < today.setHours(0,0,0,0)) {
+                        dayElement.classList.add('disabled');
+                    } else {
+                        dayElement.addEventListener('click', () => handleDateClick(i));
+                    }
+
+                    if (state.calendar.selectedStartDate && i === state.calendar.selectedStartDate.getDate() && month === state.calendar.selectedStartDate.getMonth()) {
+                        dayElement.classList.add('selected');
+                    }
+                     if (state.calendar.selectedEndDate && i === state.calendar.selectedEndDate.getDate() && month === state.calendar.selectedEndDate.getMonth()) {
+                        dayElement.classList.add('selected');
+                    }
+
+                    calendarDaysContainer.appendChild(dayElement);
+                }
+            };
+
+            const showToast = (message, type = 'info') => {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.getElementById('toast-container').appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 10);
+                setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 3000);
+            };
+
+            const fetchAllData = async () => {
+                try {
+                    const promises = [apiService.getEquipment(), apiService.getRequests(), apiService.getEquipmentTypes()];
+                    if (state.currentUser.role === 'Super Admin') {
+                        promises.push(apiService.getAllUsers());
+                    }
+                    const [equipment, requests, types, users] = await Promise.all(promises);
+                    
+                    state.equipment = equipment;
+                    state.requests = requests;
+                    state.equipmentTypes = types;
+                    if (users) {
+                        state.users = users;
+                    }
+                    render();
+                } catch (error) { console.error('Error fetching data:', error); showToast('Could not load application data.', 'error'); }
+            };
+
+            // --- Event Handlers ---
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                try {
+                    const authResponse = await apiService.login(loginForm.username.value, loginForm.password.value);
+                    state.currentUser = authResponse;
+                    showToast(`Login successful! Welcome ${authResponse.username}.`, 'success');
+                    eventBus.emit('loginSuccess');
+                } catch (error) { 
+                    console.error('Login error:', error); 
+                    showToast('the name or password is incorect', 'error'); 
+                }
+            };
+
+            const handleSignup = async (e) => {
+                e.preventDefault();
+                const username = signupForm['signup-username'].value;
+                const password = signupForm['signup-password'].value;
+                if (password !== signupForm['signup-confirm-password'].value) {
+                    showToast('Passwords do not match.', 'error'); return;
+                }
+                try {
+                    const authResponse = await apiService.register(username, password);
+                    state.currentUser = authResponse;
+                    showToast('Account created successfully!', 'success');
+                    eventBus.emit('loginSuccess');
+                } catch (error) { console.error('Signup error:', error); showToast(error.message, 'error'); }
+            };
+
+            const handleLogout = () => {
+                state.currentUser = null; state.equipment = []; state.requests = []; state.users = [];
+                render();
+                showToast('You have been logged out.');
+            };
+            
+            const handleRequestItem = (e) => {
+                if (e.target.classList.contains('request-btn')) {
+                    const equipmentId = parseInt(e.target.dataset.id, 10);
+                    document.getElementById('reservation-item-id').value = equipmentId;
+                    state.calendar.selectedStartDate = null;
+                    state.calendar.selectedEndDate = null;
+                    renderCalendar();
+                    reservationModal.classList.add('active');
+                }
+            };
+
+            const handleDateClick = (day) => {
+                const date = new Date(state.calendar.date.getFullYear(), state.calendar.date.getMonth(), day);
+                if (!state.calendar.selectedStartDate || state.calendar.selectedEndDate) {
+                    state.calendar.selectedStartDate = date;
+                    state.calendar.selectedEndDate = null;
+                } else if (date < state.calendar.selectedStartDate) {
+                    state.calendar.selectedStartDate = date;
+                } else {
+                    state.calendar.selectedEndDate = date;
+                }
+                renderCalendar();
+            };
+            
+            const handleReservationSubmit = async (e) => {
+                e.preventDefault();
+                if (!state.calendar.selectedStartDate) {
+                    showToast('Please select a start date.', 'error'); return;
+                }
+                if (!state.calendar.selectedEndDate) {
+                    state.calendar.selectedEndDate = state.calendar.selectedStartDate;
+                }
+
+                const reservationDetails = {
+                    equipmentId: parseInt(document.getElementById('reservation-item-id').value),
+                    userId: state.currentUser.userId,
+                    userName: state.currentUser.username,
+                    startDate: `${state.calendar.selectedStartDate.toISOString().split('T')[0]}T${document.getElementById('start-time').value}`,
+                    endDate: `${state.calendar.selectedEndDate.toISOString().split('T')[0]}T${document.getElementById('end-time').value}`
+                };
+
+                try {
+                    await apiService.createRequest(reservationDetails);
+                    showToast('Reservation submitted successfully!', 'success');
+                    reservationModal.classList.remove('active');
+                } catch (error) {
+                    console.error('Reservation error:', error);
+                    showToast('Could not submit reservation.', 'error');
+                }
+            };
+
+            const handleAdminActions = async (e) => {
+                const target = e.target;
+                const id = parseInt(target.dataset.id, 10);
+                
+                // Request Actions
+                let requestStatus = '';
+                if (target.classList.contains('approve-btn')) requestStatus = 'Approved';
+                if (target.classList.contains('reject-btn')) requestStatus = 'Rejected';
+                if (target.classList.contains('return-btn')) requestStatus = 'Returned';
+                if (requestStatus && id) {
+                    try { 
+                        await apiService.updateRequestStatus(id, requestStatus); 
+                        showToast(`Request has been ${requestStatus.toLowerCase()}.`, 'success'); 
+                        fetchAllData();
+                    } catch (error) { console.error('Action error:', error); showToast('Failed to update request.', 'error'); }
+                }
+
+                // User Role Actions
+                let newRole = '';
+                if (target.classList.contains('promote-btn')) newRole = 'Admin';
+                if (target.classList.contains('demote-btn')) newRole = 'User';
+                if (newRole && id) {
+                     try { 
+                        await apiService.updateUserRole(id, newRole); 
+                        showToast(`User role has been updated.`, 'success'); 
+                        fetchAllData();
+                    } catch (error) { console.error('Role change error:', error); showToast('Failed to update user role.', 'error'); }
+                }
+            };
+
+            const handleAddItemClick = () => {
+                const itemTypeSelect = document.getElementById('item-type');
+                itemTypeSelect.innerHTML = '';
+                state.equipmentTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    itemTypeSelect.appendChild(option);
+                });
+                const newTypeOption = document.createElement('option');
+                newTypeOption.value = 'new';
+                newTypeOption.textContent = 'Add New Type...';
+                itemTypeSelect.appendChild(newTypeOption);
+                
+                document.getElementById('new-type-group').style.display = 'none';
+                addItemForm.reset();
+                addItemModal.classList.add('active');
+            };
+
+            const handleAddItemSubmit = async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('item-name').value;
+                let type = document.getElementById('item-type').value;
+                const quantity = parseInt(document.getElementById('item-quantity').value, 10);
+                const condition = document.getElementById('item-condition').value;
+                const location = document.getElementById('item-location').value;
+
+                if (type === 'new') {
+                    type = document.getElementById('new-item-type').value.trim();
+                    if (!type) {
+                        showToast('New type name cannot be empty.', 'error');
+                        return;
+                    }
+                }
+
+                const itemDetails = { name, type, quantity, condition, location };
+                try {
+                    await apiService.addEquipment(itemDetails);
+                    showToast(`${quantity} new item(s) added successfully!`, 'success');
+                    addItemModal.classList.remove('active');
+                    fetchAllData();
+                } catch (error) {
+                    console.error('Add item error:', error);
+                    showToast('Failed to add new item(s).', 'error');
+                }
+            };
+            
+            const handleChatSubmit = async (e) => {
+                e.preventDefault();
+                const prompt = chatInput.value.trim();
+                if (!prompt) return;
+                appendChatMessage(prompt, 'user');
+                chatInput.value = '';
+                const response = await apiService.getGeminiResponse(prompt);
+                appendChatMessage(response, 'gemini');
+            };
+            
+            const appendChatMessage = (text, sender) => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${sender}`;
+                messageDiv.textContent = text;
+                chatBody.appendChild(messageDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            };
+
+            // --- Event Listeners ---
+            loginForm.addEventListener('submit', handleLogin);
+            signupForm.addEventListener('submit', handleSignup);
+            logoutBtn.addEventListener('click', handleLogout);
+            showLoginBtn.addEventListener('click', () => switchView('login'));
+            showSignupBtn.addEventListener('click', () => switchView('signup'));
+            document.getElementById('user-view').addEventListener('click', handleRequestItem);
+            document.getElementById('admin-view').addEventListener('click', handleAdminActions);
+            addItemBtn.addEventListener('click', handleAddItemClick);
+            
+            // Chat listeners
+            chatFab.addEventListener('click', () => chatModal.classList.toggle('active'));
+            closeChatBtn.addEventListener('click', () => chatModal.classList.remove('active'));
+            chatForm.addEventListener('submit', handleChatSubmit);
+
+            // Modal & Form Listeners
+            reservationForm.addEventListener('submit', handleReservationSubmit);
+            cancelReservationBtn.addEventListener('click', () => reservationModal.classList.remove('active'));
+            addItemForm.addEventListener('submit', handleAddItemSubmit);
+            cancelAddItemBtn.addEventListener('click', () => addItemModal.classList.remove('active'));
+            document.getElementById('item-type').addEventListener('change', (e) => {
+                document.getElementById('new-type-group').style.display = e.target.value === 'new' ? 'block' : 'none';
+            });
+
+            // Calendar Listeners
+            prevMonthBtn.addEventListener('click', () => {
+                state.calendar.date.setMonth(state.calendar.date.getMonth() - 1);
+                renderCalendar();
+            });
+            nextMonthBtn.addEventListener('click', () => {
+                state.calendar.date.setMonth(state.calendar.date.getMonth() + 1);
+                renderCalendar();
+            });
+
+            // --- Event Bus Subscriptions ---
+            eventBus.on('loginSuccess', fetchAllData);
+
+            // --- Initial Render ---
+            render();
+        });
+    </script>
+</body>
+</html>

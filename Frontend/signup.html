@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="signup.css">
+  <link rel="stylesheet" href="header.css">
+  <title>Sign Up - Getafix</title>
+</head>
+<body>
+     <header>
+      <nav class="navbar">
+        <!-- Logo -->
+        <div class="logo">
+          <div class="logo-icon"></div>
+          <span class="logo-text"><a class="basic-link" href="index.html">Getafix</a></span>
+        </div>
+
+        <!-- Links -->
+        <div class="nav-links">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="#">About</a>
+          <a href="#">Contact us</a>
+        </div>
+
+        <!-- Auth Buttons -->
+        <div class="auth-buttons">
+          <button class="btn-outline"><a class="basic-link" href="#">Log in</a></button>
+          <button class="btn-solid"><a class="basic-link" href="signup.html">Sign up</a></button>
+        </div>
+      </nav>
+    </header> 
+
+  <div class="signup-container">
+    <h2>Create Your Getafix Account</h2>
+    <form id="signupForm" action="/signup" method="POST">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="username">Username (3-16 characters)</label>
+      <input type="text" id="username" name="username" pattern=".{3,16}" required>
+
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" name="firstName" required>
+
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" name="lastName" required>
+
+      <label for="password">Password (min 8 characters and 1 capital letter)</label>
+      <input type="password" id="password" name="password" pattern="(?=.*[A-Z]).{8,}" required>
+
+      <label for="confirmPassword">Repeat Password</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+      <label for="school">School Name</label>
+      <input type="text" id="school" name="school" required>
+
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Passwords do not match.');
+      }
+    });
+  </script>
+</body>
+</html>
