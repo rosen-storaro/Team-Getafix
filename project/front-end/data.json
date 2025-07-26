@@ -1,0 +1,18 @@
+{
+    "user":{
+        "id": 1,
+        "username":"Admin",
+        "role":"admin"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "invetory":[
+        {"id": 101, "name": "Laptop Lenovo", "status":"Available"},
+        {"id":102, "name":"Projector Epson", "status":"Borrowed"}
+    ],
+    "borrow_response":{
+        "message":"Item Borrowed successfully."
+    },
+    "return_response":{
+        "message":"Item returned."
+    }
+}
