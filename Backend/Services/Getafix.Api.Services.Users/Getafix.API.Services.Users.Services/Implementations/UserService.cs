@@ -4,6 +4,7 @@ using Getafix.Api.Services.Users.Services.Contracts;
 using Getafix.Api.Services.Users.Shared.Models.User;
 using Getafix.Api.Services.Shared.Data.Models.Identity;
 using AutoMapper;
+using Getafix.Api.Services.Users.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -116,7 +117,7 @@ internal class UserService : IUserService
         return users.Select(user => this.mapper.Map<UserVM>(user)).ToList();
     }
 
-    //// <inheritdoc/>
+    /// <inheritdoc/>
     public async Task<IdentityResult> DeleteUserAsync(string id)
     {
         var rts = await this.context.RefreshTokens.Where(rt => rt.UserId == id).ToListAsync();

@@ -1,5 +1,3 @@
-using Getafix.Api.Services.Users.Services.Contracts;
-using Getafix.Api.Services.Users.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Getafix.Api.Services.Users.Services.Contracts;
 using Getafix.Api.Services.Users.Services.Implementations;

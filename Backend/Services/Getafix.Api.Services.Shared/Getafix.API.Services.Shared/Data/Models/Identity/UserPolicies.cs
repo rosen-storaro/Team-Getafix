@@ -11,12 +11,6 @@ public static class UserPolicies
     /// the highest level of access, intended for users who manage and configure the application.
     /// </summary>
     public const string AdminPermissions = "AdminPermissions";
-   
-    /// <summary>
-    /// Represents a policy for users with accountant permissions. This policy grants access to features that
-    /// are specific to accountants, such as viewing analytics and sales of products.
-    /// </summary>
-    public const string AccountantPermissions = "AccountantPermissions";
     
     /// <summary>
     /// Represents a policy for general users of the application. This policy grants access to general features
@@ -24,16 +18,5 @@ public static class UserPolicies
     /// </summary>
     public const string UserPermissions = "UserPermissions";
     
-    /// <summary>
-    /// Represents a policy for users with elevated permissions. This policy grants access to features that
-    /// are both for accountants and general users, but do not require administrative privileges.
-    /// </summary>
-    public const string NormalPermissions = "NormalPermissions";
-    
-    /// <summary>
-    /// Represents a policy for users with elevated permissions. This policy grants access to features that
-    /// are both for accountants and administrators, but do not require general user privileges.
-    /// </summary>
-    public const string ElevatedPermissions = "ElevatedPermissions";
-    
+    public const string ManagerPermissions = "ManagerPermissions";
 }

@@ -1,6 +1,7 @@
 using Getafix.Api.Services.Users.MigrationService;
 using Getafix.Api.Services.Users.Services;
 using Getafix.Api.Services.Users.Data.Data;
+using Getafix.Api.Services.Users.Data.Models;
 using Getafix.Api.Services.Users.Data.Models.Identity;
 using Getafix.Api.Services.Users.WebHost.Profiles;
 using Microsoft.AspNetCore.Identity;

@@ -9,6 +9,10 @@ var identityDb = builder.AddPostgres("identity-db-server", password: rabbitMqPas
     .WithDataVolume()
     .AddDatabase("identity-db");
 
+var itemsDb = builder.AddPostgres("items-db-server", password: rabbitMqPassword)
+    .WithDataVolume()
+    .AddDatabase("items-db");
+
 var rabbitMq = builder.AddRabbitMQ(
         "Getafix-eventbus",
         rabbitMqUsername,

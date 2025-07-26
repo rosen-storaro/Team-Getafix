@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\Getafix.API.Services.Items.WebHost.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DocumentationFile>bin\Release\Getafix.API.Services.Items.WebHost.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.3.1" />
+        <PackageReference Include="AutoMapper" Version="14.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Aspire\Getafix.API.Aspire.ServiceDefaults\Getafix.API.Aspire.ServiceDefaults.csproj" />
+        <ProjectReference Include="..\..\Aspire\Getafix.API.Aspire.ServiceDefaults\Getafix.API.Aspire.ServiceDefaults.csproj" />
+        <ProjectReference Include="..\..\Getafix.Api.Services.Shared\Getafix.API.Services.Shared\Getafix.API.Services.Shared.csproj" />
+        <ProjectReference Include="..\Getafix.API.Services.Items.Data\Getafix.API.Services.Items.Data.csproj" />
+        <ProjectReference Include="..\Getafix.API.Services.Items.Services\Getafix.API.Services.Items.Services.csproj" />
+        <ProjectReference Include="..\Getafix.API.Services.Items.Shared\Getafix.API.Services.Items.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

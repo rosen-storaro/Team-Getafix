@@ -1,21 +1,19 @@
-﻿using Getafix.Api.Services.Users.Data.Models;
-using Getafix.Api.Services.Users.Data.Models.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Getafix.Api.Services.Items.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Getafix.Api.Services.Users.Data.Data;
+namespace Getafix.Api.Services.Items.Data.Data;
 
 /// <summary>
 /// Application Database Context.
 /// </summary>
 /// <param name="options">Database Context Options.</param>
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
-    : IdentityDbContext<User>(options)
+    : DbContext(options)
 {
     /// <summary>
-    /// Gets or sets RefreshTokens.
+    /// Gets or sets Items.
     /// </summary>
-    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+    public virtual DbSet<Item> Items { get; set; }
     
     /// <summary>
     /// Overrides the default on model creating method.
@@ -23,7 +21,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     /// <param name="builder">Model Builder.</param>
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<User>()
+        builder.Entity<Item>()
             .HasQueryFilter(x => x.IsDeleted == false);
         
         base.OnModelCreating(builder);

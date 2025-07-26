@@ -6,6 +6,7 @@ using Getafix.Api.Services.Users.Data.Models.Identity;
 using Getafix.Api.Services.Users.Services.Contracts;
 using Getafix.Api.Services.Users.Shared.Models.Token;
 using Getafix.Api.Services.Shared.Data.Models.Identity;
+using Getafix.Api.Services.Users.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

@@ -1,6 +1,7 @@
 using Getafix.Api.Services.Users.Data.Models.Identity;
 using Getafix.Api.Services.Users.Shared.Models.User;
 using AutoMapper;
+using Getafix.Api.Services.Users.Data.Models;
 
 namespace Getafix.Api.Services.Users.WebHost.Profiles;
 

@@ -10,6 +10,7 @@ using Getafix.Api.Services.Users.WebHost.Profiles;
 using Getafix.Api.Services.Users.WebHost.SwaggerConfiguration;
 using Getafix.Api.Services.Shared.Data.Interceptors;
 using Getafix.Api.Services.Shared.Data.Models.Identity;
+using Getafix.Api.Services.Users.Data.Models;
 // using Getafix.Api.Services.Shared.IntegrationEvent;
 // using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -59,14 +60,8 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(UserPolicies.UserPermissions, policy =>
         policy.RequireRole(UserRoles.User)); 
-    options.AddPolicy(UserPolicies.AccountantPermissions, policy =>
-        policy.RequireRole(UserRoles.Accountant));
     options.AddPolicy(UserPolicies.AdminPermissions, policy =>
         policy.RequireRole(UserRoles.Admin));
-    options.AddPolicy(UserPolicies.NormalPermissions, policy => 
-        policy.RequireRole(UserRoles.User, UserRoles.Accountant));
-    options.AddPolicy(UserPolicies.ElevatedPermissions, policy => 
-        policy.RequireRole(UserRoles.Accountant, UserRoles.Admin));
 });
 
 builder.Services.AddControllers();

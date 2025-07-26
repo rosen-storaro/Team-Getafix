@@ -1,7 +1,7 @@
 ﻿using Getafix.Api.Services.Shared.Data.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace Getafix.Api.Services.Users.Data.Models.Identity;
+namespace Getafix.Api.Services.Users.Data.Models;
 
 /// <summary>
 /// Represents a user in the identity system.

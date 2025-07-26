@@ -2,6 +2,7 @@ using Getafix.Api.Services.Users.Data.Models.Identity;
 using Getafix.Api.Services.Users.Services.Contracts;
 using Getafix.Api.Services.Users.Shared.Models.User;
 using Getafix.Api.Services.Shared.Data.Models.Identity;
+using Getafix.Api.Services.Users.Data.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Getafix.Api.Services.Users.Services.Implementations;
