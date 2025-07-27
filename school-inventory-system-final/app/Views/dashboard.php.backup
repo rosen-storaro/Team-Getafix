@@ -1,0 +1,570 @@
+<?php
+$title = 'Dashboard - School Inventory Management System';
+ob_start();
+?>
+
+<div class="container-fluid">
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">Dashboard</h1>
+                    <p class="text-muted mb-0">Welcome back, <?= htmlspecialchars($_SESSION['first_name'] ?? 'User') ?>!</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">Last updated: <span id="lastUpdated"><?= date('M j, Y g:i A') ?></span></small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats Cards -->
+    <div class="row mb-4" id="statsCards">
+        <!-- Stats will be loaded dynamically -->
+        <div class="col-12 text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading dashboard statistics...</p>
+        </div>
+    </div>
+    
+    <!-- Main Content Row -->
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-8">
+            <!-- Recent Activity -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clock-history me-2"></i>Recent Activity
+                    </h5>
+                    <a href="/requests" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div id="recentActivity">
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2 mb-0 text-muted">Loading recent activity...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Borrowing Trends Chart (Admin only) -->
+            <?php if (in_array($_SESSION['role_name'] ?? '', ['Admin', 'Super-admin'])): ?>
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-graph-up me-2"></i>Borrowing Trends
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="trendPeriod" id="trendWeek" value="week">
+                        <label class="btn btn-outline-secondary" for="trendWeek">Week</label>
+                        
+                        <input type="radio" class="btn-check" name="trendPeriod" id="trendMonth" value="month" checked>
+                        <label class="btn btn-outline-secondary" for="trendMonth">Month</label>
+                        
+                        <input type="radio" class="btn-check" name="trendPeriod" id="trendYear" value="year">
+                        <label class="btn btn-outline-secondary" for="trendYear">Year</label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="borrowingTrendsChart" height="100"></canvas>
+                </div>
+            </div>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-lightning me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/inventory/browse" class="btn btn-primary">
+                            <i class="bi bi-search me-2"></i>Browse Items
+                        </a>
+                        <a href="/requests/create" class="btn btn-success">
+                            <i class="bi bi-plus-circle me-2"></i>New Request
+                        </a>
+                        <?php if (in_array($_SESSION['role_name'] ?? '', ['Admin', 'Super-admin'])): ?>
+                        <a href="/inventory/add" class="btn btn-info">
+                            <i class="bi bi-box-seam me-2"></i>Add Item
+                        </a>
+                        <a href="/reports" class="btn btn-warning">
+                            <i class="bi bi-graph-up me-2"></i>View Reports
+                        </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pending Approvals (Admin only) -->
+            <?php if (in_array($_SESSION['role_name'] ?? '', ['Admin', 'Super-admin'])): ?>
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clock me-2"></i>Pending Approvals
+                    </h5>
+                    <span class="badge bg-warning" id="pendingCount">0</span>
+                </div>
+                <div class="card-body">
+                    <div id="pendingApprovals">
+                        <div class="text-center py-2">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+            
+            <!-- Low Stock Alerts (Admin only) -->
+            <?php if (in_array($_SESSION['role_name'] ?? '', ['Admin', 'Super-admin'])): ?>
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Low Stock Alerts
+                    </h5>
+                    <span class="badge bg-danger" id="lowStockCount">0</span>
+                </div>
+                <div class="card-body">
+                    <div id="lowStockAlerts">
+                        <div class="text-center py-2">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+            
+            <!-- My Recent Requests (User view) -->
+            <?php if (($_SESSION['role_name'] ?? '') === 'User'): ?>
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-person-check me-2"></i>My Recent Requests
+                    </h5>
+                    <a href="/requests" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div id="userRequests">
+                        <div class="text-center py-2">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<?php
+$content = ob_get_clean();
+
+$scripts = '
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let borrowingChart = null;
+
+document.addEventListener("DOMContentLoaded", function() {
+    loadDashboardData();
+    
+    // Auto-refresh every 5 minutes
+    setInterval(loadDashboardData, 5 * 60 * 1000);
+    
+    // Trend period change handlers
+    document.querySelectorAll("input[name=\'trendPeriod\']").forEach(radio => {
+        radio.addEventListener("change", function() {
+            if (this.checked) {
+                loadBorrowingTrends(this.value);
+            }
+        });
+    });
+});
+
+async function loadDashboardData() {
+    try {
+        // Load dashboard stats
+        const statsResponse = await fetch("/api/reports/dashboard", {
+            credentials: 'same-origin'
+        });
+        if (statsResponse.ok) {
+            const statsData = await statsResponse.json();
+            renderStatsCards(statsData.stats);
+        } else {
+            console.error("Failed to load dashboard stats:", statsResponse.status);
+        }
+        
+        // Load recent activity
+        loadRecentActivity();
+        
+        // Admin-specific data
+        if (["Admin", "Super-admin"].includes(userRole)) {
+            loadPendingApprovals();
+            loadLowStockAlerts();
+            loadBorrowingTrends("month");
+        }
+        
+        // User-specific data
+        if (userRole === "User") {
+            loadUserRequests();
+        }
+        
+        // Update timestamp
+        document.getElementById("lastUpdated").textContent = new Date().toLocaleString();
+        
+    } catch (error) {
+        console.error("Error loading dashboard data:", error);
+        showAlert("Failed to load dashboard data", "danger");
+    }
+}
+
+function renderStatsCards(stats) {
+    const container = document.getElementById("statsCards");
+    
+    const cards = [
+        {
+            title: "Total Items",
+            value: stats.total_items || 0,
+            icon: "bi-box-seam",
+            color: "primary",
+            change: null
+        },
+        {
+            title: "Available Items",
+            value: stats.available_items || 0,
+            icon: "bi-check-circle",
+            color: "success",
+            change: null
+        },
+        {
+            title: "Active Borrows",
+            value: stats.active_borrows || 0,
+            icon: "bi-arrow-right-circle",
+            color: "info",
+            change: null
+        },
+        {
+            title: "Pending Requests",
+            value: stats.pending_requests || 0,
+            icon: "bi-clock",
+            color: "warning",
+            change: null
+        }
+    ];
+    
+    // Add admin-specific cards
+    if (["Admin", "Super-admin"].includes(userRole)) {
+        cards.push(
+            {
+                title: "Low Stock Items",
+                value: stats.low_stock_items || 0,
+                icon: "bi-exclamation-triangle",
+                color: "danger",
+                change: null
+            },
+            {
+                title: "Overdue Items",
+                value: stats.overdue_items || 0,
+                icon: "bi-exclamation-circle",
+                color: "danger",
+                change: null
+            }
+        );
+    }
+    
+    container.innerHTML = cards.map(card => `
+        <div class="col-md-6 col-xl-${12 / cards.length} mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-${card.color} bg-opacity-10 rounded-3 p-3">
+                                <i class="bi ${card.icon} text-${card.color} fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="text-muted small">${card.title}</div>
+                            <div class="fs-4 fw-bold text-${card.color}">${card.value.toLocaleString()}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join("");
+}
+
+async function loadRecentActivity() {
+    try {
+        const response = await fetch("/api/requests?limit=5");
+        if (response.ok) {
+            const data = await response.json();
+            renderRecentActivity(data.requests || []);
+        }
+    } catch (error) {
+        console.error("Error loading recent activity:", error);
+        document.getElementById("recentActivity").innerHTML = `
+            <div class="text-center py-3 text-muted">
+                <i class="bi bi-exclamation-circle"></i>
+                <p class="mb-0">Failed to load recent activity</p>
+            </div>
+        `;
+    }
+}
+
+function renderRecentActivity(requests) {
+    const container = document.getElementById("recentActivity");
+    
+    if (requests.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-3 text-muted">
+                <i class="bi bi-inbox"></i>
+                <p class="mb-0">No recent activity</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = requests.map(request => {
+        const statusColor = {
+            "Pending": "warning",
+            "Approved": "success", 
+            "Declined": "danger",
+            "Returned": "info",
+            "Cancelled": "secondary"
+        }[request.status] || "secondary";
+        
+        const timeAgo = getTimeAgo(request.created_at);
+        
+        return `
+            <div class="d-flex align-items-center py-2 border-bottom">
+                <div class="flex-shrink-0">
+                    <span class="badge bg-${statusColor}">${request.status}</span>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <div class="fw-medium">${escapeHtml(request.item_name)}</div>
+                    <small class="text-muted">
+                        by ${escapeHtml(request.first_name)} ${escapeHtml(request.last_name)} • ${timeAgo}
+                    </small>
+                </div>
+                <div class="flex-shrink-0">
+                    <a href="/requests/${request.id}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+async function loadPendingApprovals() {
+    try {
+        const response = await fetch("/api/requests/pending");
+        if (response.ok) {
+            const data = await response.json();
+            const requests = data.requests || [];
+            
+            document.getElementById("pendingCount").textContent = requests.length;
+            renderPendingApprovals(requests.slice(0, 5));
+        }
+    } catch (error) {
+        console.error("Error loading pending approvals:", error);
+    }
+}
+
+function renderPendingApprovals(requests) {
+    const container = document.getElementById("pendingApprovals");
+    
+    if (requests.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-2 text-muted">
+                <i class="bi bi-check-circle"></i>
+                <p class="mb-0 small">No pending approvals</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = requests.map(request => `
+        <div class="d-flex align-items-center py-2 border-bottom">
+            <div class="flex-grow-1">
+                <div class="fw-medium small">${escapeHtml(request.item_name)}</div>
+                <small class="text-muted">${escapeHtml(request.first_name)} ${escapeHtml(request.last_name)}</small>
+            </div>
+            <div class="flex-shrink-0">
+                <a href="/requests/${request.id}" class="btn btn-xs btn-outline-primary">
+                    <i class="bi bi-eye"></i>
+                </a>
+            </div>
+        </div>
+    `).join("");
+}
+
+async function loadLowStockAlerts() {
+    try {
+        const response = await fetch("/api/inventory/low-stock");
+        if (response.ok) {
+            const data = await response.json();
+            const items = data.items || [];
+            
+            document.getElementById("lowStockCount").textContent = items.length;
+            renderLowStockAlerts(items.slice(0, 5));
+        }
+    } catch (error) {
+        console.error("Error loading low stock alerts:", error);
+    }
+}
+
+function renderLowStockAlerts(items) {
+    const container = document.getElementById("lowStockAlerts");
+    
+    if (items.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-2 text-muted">
+                <i class="bi bi-check-circle"></i>
+                <p class="mb-0 small">All items in stock</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = items.map(item => `
+        <div class="d-flex align-items-center py-2 border-bottom">
+            <div class="flex-grow-1">
+                <div class="fw-medium small">${escapeHtml(item.name)}</div>
+                <small class="text-danger">
+                    ${item.quantity}/${item.low_stock_threshold} remaining
+                </small>
+            </div>
+            <div class="flex-shrink-0">
+                <a href="/inventory/${item.id}" class="btn btn-xs btn-outline-danger">
+                    <i class="bi bi-eye"></i>
+                </a>
+            </div>
+        </div>
+    `).join("");
+}
+
+async function loadUserRequests() {
+    try {
+        const response = await fetch("/api/requests?limit=5");
+        if (response.ok) {
+            const data = await response.json();
+            renderUserRequests(data.requests || []);
+        }
+    } catch (error) {
+        console.error("Error loading user requests:", error);
+    }
+}
+
+function renderUserRequests(requests) {
+    const container = document.getElementById("userRequests");
+    
+    if (requests.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-2 text-muted">
+                <i class="bi bi-inbox"></i>
+                <p class="mb-0 small">No recent requests</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = requests.map(request => {
+        const statusColor = {
+            "Pending": "warning",
+            "Approved": "success", 
+            "Declined": "danger",
+            "Returned": "info",
+            "Cancelled": "secondary"
+        }[request.status] || "secondary";
+        
+        return `
+            <div class="d-flex align-items-center py-2 border-bottom">
+                <div class="flex-shrink-0">
+                    <span class="badge bg-${statusColor} badge-sm">${request.status}</span>
+                </div>
+                <div class="flex-grow-1 ms-2">
+                    <div class="fw-medium small">${escapeHtml(request.item_name)}</div>
+                    <small class="text-muted">${formatDate(request.date_from)}</small>
+                </div>
+                <div class="flex-shrink-0">
+                    <a href="/requests/${request.id}" class="btn btn-xs btn-outline-secondary">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+async function loadBorrowingTrends(period) {
+    try {
+        const response = await fetch(`/api/reports/chart-data?type=borrowing_trends&period=${period}&limit=12`);
+        if (response.ok) {
+            const data = await response.json();
+            renderBorrowingTrendsChart(data.chart);
+        }
+    } catch (error) {
+        console.error("Error loading borrowing trends:", error);
+    }
+}
+
+function renderBorrowingTrendsChart(chartData) {
+    const ctx = document.getElementById("borrowingTrendsChart");
+    if (!ctx) return;
+    
+    // Destroy existing chart
+    if (borrowingChart) {
+        borrowingChart.destroy();
+    }
+    
+    borrowingChart = new Chart(ctx, chartData);
+}
+
+// Utility functions
+function getTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return "Just now";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString();
+}
+
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Get user role from session
+const userRole = "Super-admin";
+</script>
+';
+
+include __DIR__ . '/layout.php';
+?>
+

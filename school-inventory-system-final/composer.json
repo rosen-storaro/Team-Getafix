@@ -1,0 +1,23 @@
+{
+    "name": "school/inventory-management-system",
+    "description": "A production-ready school inventory management system",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "vlucas/phpdotenv": "^5.5",
+        "endroid/qr-code": "^4.8",
+        "firebase/php-jwt": "^6.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Services\\": "services/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
+
